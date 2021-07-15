@@ -1,10 +1,128 @@
 <template>
   <b-container fluid>
+    <b-card>
+      <!-- Details -->
+      <b-row class="text-left">
+        <b-col cols="3">Detail</b-col>
+        <b-col cols="9">
+          <b-row>
+            <b-col cols="12">
+              <b-form-group>
+              <label for="Name">Name <span style="color:red">*</span></label>
+                <b-form-select class="mb-2" v-model="selected" :options="options"></b-form-select>  
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="12">
+              <b-form-group>
+              <label for="Name">Distribution Center <span style="color:red">*</span></label>
+                <b-form-select v-model="selected" :options="options"></b-form-select>  
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <template>
+          <b-row>
+            <b-col cols="6">
+              <b-form-group>
+              <label for="Name">Payment Type <span style="color:red">*</span></label>
+                <b-form-select v-model="selected" :options="options"></b-form-select>  
+              </b-form-group>
+            </b-col>
+            <b-col cols="6">
+              <b-form-group>
+              <label for="Name">Expired Date <span style="color:red">*</span></label>
+                <b-form-select v-model="selected" :options="options"></b-form-select>  
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="12">
+              <b-form-group>
+              <label for="Name">Notes</label>
+                <b-form-textarea
+                  id="textarea"
+                  v-model="text"
+                  placeholder="Enter something..."
+                  rows="3"
+                  max-rows="6"
+                ></b-form-textarea>
+              </b-form-group>
+            </b-col>
+          </b-row>
+          </template>  
+        </b-col>
+      </b-row>
+      <hr>
+      <!-- Products -->
+      <template>
+        <b-row>
+          <b-col cols="3">Products</b-col>
+          <b-col cols="9">
+            <b-row>
+              <b-col cols="9">
+                <b-form-group>
+                <label for="Name">Product <span style="color:red">*</span></label>
+                  <b-form-select v-model="selected" :options="options"></b-form-select>  
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                <label for="Name">Unit <span style="color:red">*</span></label>
+                  <b-form-select v-model="selected" :options="options"></b-form-select>  
+                </b-form-group>
+              </b-col>
+            </b-row>
+
+            <b-row>
+              <b-col cols="3">
+                <b-form-group>
+                <label for="Name">Quantity <span style="color:red">*</span></label>
+                  <b-form-select v-model="selected" :options="options"></b-form-select>  
+                </b-form-group>
+              </b-col>
+              <b-col cols="3">
+                <b-form-group>
+                <label for="Name">Price <span style="color:red">*</span></label>
+                  <b-form-select v-model="selected" :options="options"></b-form-select>  
+                </b-form-group>
+              </b-col>
+              <b-col cols="6">
+                <div>
+                <b-form-group>
+                <label for="Name">Total Price <span style="color:red">*</span></label>
+                  <b-form-select v-model="selected" :options="options"></b-form-select>  
+                </b-form-group> </div>
+                <hr>
+                <div class="d-flex justify-content-between">
+                  <span>Total Nett Price</span>
+                  <span>0</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span>Total</span> 
+                  <span>0</span>
+                </div>
+              </b-col>
+            </b-row>
+          </b-col>
+        </b-row>
+      </template>
+
+      <hr>
       <b-row>
+        <b-col>
+          <div class="d-flex justify-content-end">
+            <b-button variant="outline-secondary">Cancel</b-button>
+            <b-button :disabled="disabled" :variant="btnColor" class="ml-2">Confirm</b-button>
+        </div>
+        </b-col>
+      </b-row>
+    </b-card>
+      <!-- <b-row>
           <b-col>
               asdasd
           </b-col>
-      </b-row>
+      </b-row> -->
   </b-container>
 </template>
 
@@ -14,107 +132,33 @@ export default {
   name: "Home",
   data() {
     return {
-      name: "Home",
-      items: [
-        {
-          id: "1923",
-          name: "Tas Pria Ransel Distro Original",
-          price: 100000,
-          stuff: {
-            image_url:
-              "https://s2.bukalapak.com/img/2584349902/small/Tas_Pria_Ransel__Distro_Original_Bandung________________tas_.jpg",
-            stock: 4,
-          },
-          store: {
-            id: 129,
-            name: "Kobeo Store",
-          },
-          category: {
-            id: 1,
-            name: "Asessoris Pria",
-          },
-        },
-        {
-          id: "1987",
-          name: "Sepatu Running Adidas Original",
-          price: 175000,
-          stuff: {
-            image_url:
-              "https://s1.bukalapak.com/img/6024418382/small/SEPATU.jpg",
-            stock: 8,
-          },
-          store: {
-            id: 315,
-            name: "sepatuonlineinc",
-          },
-          category: {
-            id: 2,
-            name: "Sepatu Pria",
-          },
-        },
-        {
-          id: "2001",
-          name:
-            "Jaket Virendra Polos. Tersedia Semua Logo Club Bola. Jacket Soccer Waterproof Promo",
-          price: 200000,
-          stuff: {
-            image_url:
-              "https://s0.bukalapak.com/img/5759820062/small/Jaket_Virendra_Polos_Tersedia_Semua_Logo_Club_Bola_Jacket_So.jpg",
-            stock: 15,
-          },
-          store: {
-            id: 177,
-            name: "Butik Soccer ID",
-          },
-          category: {
-            id: 3,
-            name: "Pakaian",
-          },
-        },
-        {
-          id: "2024",
-          name:
-            "Baju Koko Shaquille Biru Kemeja Soccer Baju Sholat Muslim Gamis Kemko",
-          price: 140000,
-          stuff: {
-            image_url:
-              "https://s2.bukalapak.com/img/2681803562/small/Baju_Koko_Shaquille_Hiaju_Kemeja_Soccer_Baju_Sholat_Muslim_G.jpg",
-            stock: 20,
-          },
-          store: {
-            id: 177,
-            name: "Butik Soccer ID",
-          },
-          category: {
-            id: 3,
-            name: "Pakaian",
-          },
-        },
-        {
-          id: "2531",
-          name: "SEPATU SNEAKERS PRIA SEPATU PRIA",
-          price: 185000,
-          stuff: {
-            image_url:
-              "https://s1.bukalapak.com/img/6453738872/small/1530104514938_scaled.jpg",
-            stock: 4,
-          },
-          store: {
-            id: 398,
-            name: "NF Footwear",
-          },
-          category: {
-            id: 2,
-            name: "Sepatu Pria",
-          },
-        },
+      disabled: true,
+      selected: null,
+      btnColor: 'null',
+      options: [
+        { value: null, text: 'Please select an option' },
+          { value: 'a', text: 'This is First option' },
+          { value: 'b', text: 'Selected Option' },
+          { value: { C: '3PO' }, text: 'This is an option with object value' },
+          { value: 'd', text: 'This one is disabled', disabled: true }
       ],
-      id: null,
-      isAdded: false,
     };
   },
   computed: {
     ...mapGetters({ count: "getCount" }),
+  },
+  watch:{
+    disabled: {
+      immediate: true,
+      handler(val) {
+
+        if(val == true) {
+          this.btnColor = 'secondary' 
+        } else {
+          this.btnColor = 'success'
+        }
+      }
+    }
   },
   methods: {
     ...mapMutations(["addToCartStore"]),
@@ -137,6 +181,11 @@ export default {
 </script>
 
 <style scoped>
+
+  .card-footer{
+    text-align: right;
+    background-color: #ffffff;
+  }
 .nav {
   background-color: rgb(215, 18, 73);
   color: white;
