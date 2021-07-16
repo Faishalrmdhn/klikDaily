@@ -1,5 +1,12 @@
 <template>
   <b-container fluid>
+    <b-modal v-model="alertSuccess" id="modal-center" centered hide-footer hide-header hide-header-close>
+      <b-row align-h="center">
+        <b-col cols="6">
+          <dialog-success-paid></dialog-success-paid>
+        </b-col>
+      </b-row>
+    </b-modal>
     <b-card>
       <!-- Details -->
       <b-container fluid class="px-0">
@@ -11,17 +18,22 @@
                 <b-form-group>
                 <label for="Name">Name <span style="color:red">*</span></label>
                 <b-form-select 
+                  name="input-name"
                   class="mb-2" 
                   v-model="selected"
                   :options="options"
                   value-field="id"
                   text-field="employee_name"
+                  v-validate="{ required: true }"
+                  :state="validateState('input-name')"
+                  aria-describedby="input-name-feedback"
+                  data-vv-as="name"
                   >
                     <template #first>
                       <b-form-select-option :value="null" disabled>Name</b-form-select-option>
                     </template>
                   </b-form-select>
-          
+                  <b-form-invalid-feedback id="input-name-feedback">{{ veeErrors.first('input-name') }}</b-form-invalid-feedback>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -29,31 +41,61 @@
               <b-col cols="12">
                 <b-form-group>
                 <label for="Name">Distribution Center <span style="color:red">*</span></label>
-                  <b-form-select :disabled="disabledDistributionLoc" v-model="distLocSelected" :options="distributionLoc">
+                  <b-form-select 
+                    name="input-distLoc"
+                    :disabled="disabledDistributionLoc" 
+                    v-model="distLocSelected" 
+                    :options="distributionLoc"
+                    v-validate="{ required: true }"
+                    :state="validateState('input-distLoc')"
+                    aria-describedby="input-distLoc-feedback"
+                    data-vv-as="distribution center"
+                    >
                     <template #first>
                       <b-form-select-option :value="null" disabled>Distribution Center</b-form-select-option>
                     </template>  
                   </b-form-select>  
+                  <b-form-invalid-feedback id="input-distLoc-feedback">{{ veeErrors.first('input-distLoc') }}</b-form-invalid-feedback>
                 </b-form-group>
               </b-col>
             </b-row>
 
-            <template v-if="isFilled">
+            <template v-if="isFilled && productData.length > 0">
               <b-row>
                 <b-col cols="6">
                   <b-form-group>
                   <label for="Name">Payment Type <span style="color:red">*</span></label>
-                    <b-form-select v-model="paymentTypeSelected" :options="paymentType">
+                    <b-form-select 
+                      name="input-payment-type"
+                      v-model="paymentTypeSelected" 
+                      :options="paymentType"
+                      v-validate="{ required: true }"
+                      :state="validateState('input-payment-type')"
+                      aria-describedby="input-payment-feedback"
+                      data-vv-as="payment type"
+                      >
                         <template #first>
                           <b-form-select-option :value="null" disabled>Payment Type</b-form-select-option>
                       </template>  
-                    </b-form-select>  
+                    </b-form-select>
+                    <b-form-invalid-feedback id="input-payment-feedback">{{ veeErrors.first('input-payment-type') }}</b-form-invalid-feedback>
                   </b-form-group>
                 </b-col>
                 <b-col cols="6">
                   <b-form-group>
                   <label for="Name">Expired Date <span style="color:red">*</span></label>
-                    <b-form-datepicker :min="minDate" v-model="datePicker" class="mb-2"></b-form-datepicker>
+                    <b-form-datepicker
+                      name="input-date"
+                      :min="minDate"
+                      v-model="datePicker" 
+                      class="mb-2"
+                      v-validate="{ required: true }"
+                      :state="validateState('input-date')"
+                      aria-describedby="input-date-feedback"
+                      data-vv-as="date"
+                    >
+                    </b-form-datepicker>
+                      <b-form-invalid-feedback id="input-date-feedback">{{ veeErrors.first('input-date') }}</b-form-invalid-feedback>
                   </b-form-group>
                 </b-col>
               </b-row>
@@ -78,8 +120,7 @@
       </b-container>
       <hr>
       <!-- Products -->
-      <b-container fluid v-if="isFilled" class="px-0">
-      <!-- <template v-for="(item, idx) in productData"> -->
+      <b-container fluid v-if="isFilled && productData.length > 0" class="px-0">
         <b-row>
           <b-col cols="3">Products</b-col>
           <b-col cols="9">
@@ -89,36 +130,40 @@
               <b-col cols="9">
                 <b-form-group>
                 <label for="Name">Product <span style="color:red">*</span></label>
-                <!-- 
-                  if use dropdown
-                  <b-dropdown aria-role="list" v-bind:text="(selectedProduct.id == 0? 'Select here' : selectedProduct.name)">
-                  <b-dropdown-item
-                    v-for="(product, index) in products"
-                    :key="index"
-                    aria-role="listitem"
-                    @click="setItem(product)"
-                  >
-                    {{ product.name }}
-                  </b-dropdown-item>
-              </b-dropdown> -->
-                  <b-form-select @input="inputProduct(idx)" v-model="item.productSelected" :options="listProduct">
+                  <b-form-select 
+                    name="input-product"
+                    @input="inputProduct(idx)" 
+                    v-model="item.productSelected" 
+                    :options="listProduct"
+                    v-validate="{ required: true }"
+                    :state="validateState('input-product')"
+                    aria-describedby="input-product-feedback"
+                    data-vv-as="product"
+                    >
                     <template #first>
                       <b-form-select-option :value="null" disabled>Product Name</b-form-select-option>
                   </template>    
                   </b-form-select>  
+                  <b-form-invalid-feedback id="input-product-feedback">{{ veeErrors.first('input-product') }}</b-form-invalid-feedback>
                 </b-form-group>
               </b-col>
               <b-col cols="3">
                 <b-form-group>
                 <label for="Name">Unit <span style="color:red">*</span></label>
                   <b-form-select 
+                  name="input-unit"
                   :disabled="item.disabledUnit" 
                   :options="item.listUnit" 
                   v-model="item.unitSelected"
                   @input="inputUnit(idx)"
                   value-field="price"
                   text-field="name"
-                  ></b-form-select>  
+                  v-validate="{ required: true }"
+                  :state="validateState('input-unit')"
+                  aria-describedby="input-unit-feedback"
+                  data-vv-as="unit"
+                  ></b-form-select>
+                  <b-form-invalid-feedback id="input-unit-feedback">{{ veeErrors.first('input-unit') }}</b-form-invalid-feedback>
                 </b-form-group>
               </b-col>
             </b-row>
@@ -127,16 +172,34 @@
               <b-col cols="3">
                 <b-form-group>
                 <label for="Name">Quantity <span style="color:red">*</span></label>
-                  <b-form-input placeholder="Quantity" v-model="item.qty" type="number"></b-form-input>  
+                  <b-form-input
+                    name="input-qty"
+                    placeholder="Quantity" 
+                    v-model="item.qty" 
+                    type="number"
+                    v-validate="{ required: true, min_value:1}"
+                    :state="validateState('input-qty')"
+                    aria-describedby="input-qty-feedback"
+                    data-vv-as="quantity"
+                    >
+                    </b-form-input>  
+                    <b-form-invalid-feedback id="input-qty-feedback">{{ veeErrors.first('input-qty') }}</b-form-invalid-feedback>
                 </b-form-group>
-                <!-- <div>
-                  <b-button @click="addProduct(productData.length)" variant="warning" text-variant="warning">NEW ITEM +</b-button>
-                </div> -->
               </b-col>
               <b-col cols="3">
                 <b-form-group>
                 <label for="Name">Price <span style="color:red">*</span></label>
-                  <b-form-input v-model="item.priceProduct" type="number"></b-form-input>  
+                  <b-form-input 
+                    name="input-price"
+                    v-model="item.priceProduct" 
+                    type="number"
+                    v-validate="{ required: true }"
+                    :state="validateState('input-price')"
+                    aria-describedby="input-price-feedback"
+                    data-vv-as="price"
+                    >
+                  </b-form-input>
+                  <b-form-invalid-feedback id="input-price-feedback">{{ veeErrors.first('input-price') }}</b-form-invalid-feedback>
                 </b-form-group>
               </b-col>
               <b-col cols="6">
@@ -145,7 +208,18 @@
                     <div class="d-flex justify-content-end">
                       <label for="Name">Total Price <span style="color:red">*</span></label>
                     </div>
-                    <b-form-input :disabled="disabledTotalPrice(idx)" v-model="item.totalPrice"></b-form-input>  
+                    <b-form-input
+                      name="input-total-price"
+                      :disabled="disabledTotalPrice(idx)" 
+                      v-model="item.totalPrice"
+                      :readonly="true"
+                      v-validate="{ required: true , min_value:1}"
+                      :state="validateState('input-total-price')"
+                      aria-describedby="input-total-price-feedback"
+                      data-vv-as="total price"
+                      >
+                      </b-form-input>
+                      <b-form-invalid-feedback id="input-total-price-feedback">{{ veeErrors.first('input-total-price') }}</b-form-invalid-feedback>  
                   </b-form-group> 
                 </div>
                 <hr>
@@ -153,63 +227,43 @@
                   <span>Total Nett Price</span>
                   <span>{{toRupiah(item.totalNettPrice)}}</span>
                 </div>
-                <!-- <div class="d-flex justify-content-between">
-                  <span>Total</span> 
-                  <span>{{productData.total}}</span>
-                </div> -->
               </b-col>
             </b-row>
             </b-container>
             </template>
           </b-col>
         </b-row>
-      <!-- </template> -->
 
-      <b-row class="my-3">
-        <b-col cols="3"></b-col>
-        <b-col cols="9">
-          <div>
-            <b-button @click="addProduct" variant="warning" text-variant="warning">NEW ITEM +</b-button>
-          </div>
-        </b-col>
-      </b-row>
+        <b-row class="my-3">
+          <b-col cols="3"></b-col>
+          <b-col cols="9">
+            <div>
+              <b-button @click="addProduct" variant="warning" text-variant="warning"><span style="font-size:12px; color: white">NEW ITEM +</span> </b-button>
+            </div>
+          </b-col>
+        </b-row>
 
-      <b-row>
-        <b-col cols="3"></b-col>
-        <b-col cols="9">
-          <b-row align-h="end">
-            <b-col cols="6">
-              <div class="d-flex justify-content-between">
-                <span>Total</span> 
-                <span>{{toRupiah(total)}}</span>
-              </div>
-            </b-col>
-          </b-row>
-        </b-col>
-      </b-row>
-      <hr>
+        <b-row>
+          <b-col cols="3"></b-col>
+          <b-col cols="9">
+            <b-row align-h="end">
+              <b-col cols="6">
+                <div class="d-flex justify-content-between">
+                  <span>Total</span> 
+                  <span>{{toRupiah(total)}}</span>
+                </div>
+              </b-col>
+            </b-row>
+          </b-col>
+        </b-row>
+        <hr>
       </b-container>
-      
-      <!-- <b-row class="mt-5">
-        <b-col cols="3"></b-col>
-        <b-col cols="9">
-          <b-row align-h="end">
-            <b-col cols="6">
-              <div class="d-flex justify-content-between">
-                <span>Total</span> 
-                <span>{{toRupiah(total)}}</span>
-              </div>
-            </b-col>
-          </b-row>
-        </b-col>
-      </b-row> -->
-
-      <!-- <hr> -->
+    
       <b-row>
         <b-col>
           <div class="d-flex justify-content-end">
-            <b-button variant="outline-secondary">Cancel</b-button>
-            <b-button :disabled="disabledBtn" :variant="btnColor" class="ml-2">Confirm</b-button>
+            <b-button @click="resetForm()" variant="outline-secondary">Cancel</b-button>
+            <b-button @click.prevent="onSubmit" :disabled="disabledBtn" :variant="btnColor" class="ml-2">Confirm</b-button>
         </div>
         </b-col>
       </b-row>
@@ -218,15 +272,18 @@
 </template>
 
 <script>
-// import userApi from '../api/user'
 import Axios from 'axios'
-import { mapMutations, mapGetters } from "vuex";
 import stringToCurrency from '../helper/stringToCurrency.js';
+import dialogSuccessPaid from '../components/dialogSuccess.vue'
 
 export default {
   mixins:[stringToCurrency],
+  components:{
+    'dialog-success-paid': dialogSuccessPaid
+  },
   data() {
     return {
+      alertSuccess: false,
       disabledBtn: true,
       selected: null,
       btnColor: 'secondary',
@@ -269,33 +326,7 @@ export default {
         {text: "Greenfield Full Cream Milk 1L", 
           value: [{name: "pak", price: 150000}, {name: "pcs", price:15000}, {name:'karton', price: 300000}]}
       ],
-      // listUnit:[]
-      /**if use dropdown **/
-      // products: [
-      //   {
-      //     id: 1,
-      //     name: "test1",
-      //     value: 1,
-      //     etc: "..."
-      //   },
-      //   {
-      //     id: 2,
-      //     name: "test2",
-      //     value: 2,
-      //     etc: "..."
-      //   }
-        
-      // ],
-      // selectedProduct: {
-      //   id: 0,
-      //   name: "",
-      //   value: 0,
-      //   etc: "..."
-      // }
     }
-  },
-  computed: {
-    ...mapGetters({ count: "getCount" }),
   },
   watch:{
     selected: {
@@ -312,7 +343,7 @@ export default {
     distLocSelected: {
       immediate: true,
       handler(val) {
-        if(val != null) {
+        if(val) {
           this.isFilled = true
 
         } else {
@@ -326,23 +357,30 @@ export default {
     this.initDate()
   },
   methods: {
-    ...mapMutations(["addToCartStore"]),
+    validateState(ref) {
+      if (
+        this.veeFields[ref] &&
+        (this.veeFields[ref].dirty || this.veeFields[ref].validated)
+      ) {
+        return !this.veeErrors.has(ref) ;
+      }
+      return null;
+    },
     async getAllUser(){
-      // return (async (resolve, reject)=>{
-        // for req api employee:
-        //http://dummy.restapiexample.com/api/v1/employees. 
-        // result.data.data
-        // employee_name
-        // id
-        // for req dummy json : 
-        // https://jsonplaceholder.typicode.com/users
-        // username
-        // name
-        // result.data
+      /** for req api employee:
+          http://dummy.restapiexample.com/api/v1/employees
+          result.data.data
+          text = employee_name
+          value = id
+          for req dummy json : 
+          https://jsonplaceholder.typicode.com/users
+          value = username
+          text = name
+          result.data */
+        
         try {
           const result = await Axios.get('http://dummy.restapiexample.com/api/v1/employees') 
-          this.options = result.data.data
-          console.log(this.options)
+          this.options = result.data
 
         } catch (err) {
           console.log(err)
@@ -353,9 +391,6 @@ export default {
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
       this.minDate = new Date(today)
     },
-    // setItem(product) {
-    //   this.selectedProduct = product;
-    // },
     inputProduct(idx){
       if (this.productData[idx].productSelected != null) {
         this.productData[idx].disabledUnit = false
@@ -404,7 +439,27 @@ export default {
     allowBtn(){
       this.disabledBtn = false
       this.btnColor = 'success'
-    }
+    },
+    onSubmit() {
+      this.$validator.validateAll().then(result => {
+        if (!result) {
+          return;
+        }
+
+        this.alertSuccess = true
+        setTimeout(()=>{
+          this.alertSuccess = false
+          this.resetForm()
+        },3000)
+      });
+    },
+    resetForm() {
+      window.location.reload()
+
+      this.$nextTick(() => {
+        this.$validator.reset();
+      });
+    },
   }
 }
 </script>
