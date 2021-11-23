@@ -262,8 +262,8 @@
       <b-row>
         <b-col>
           <div class="d-flex justify-content-end">
-            <b-button @click="resetForm()" variant="outline-secondary">Cancel</b-button>
-            <b-button @click.prevent="onSubmit" :disabled="disabledBtn" :variant="btnColor" class="ml-2">Confirm</b-button>
+            <b-button id="btn-cancel" @click="resetForm()" variant="outline-secondary">Cancel</b-button>
+            <b-button id="btn-confirm" @click.prevent="onSubmit" :disabled="disabledBtn" :variant="btnColor" class="ml-2">Confirm</b-button>
         </div>
         </b-col>
       </b-row>
@@ -379,8 +379,10 @@ export default {
           result.data */
         
         try {
-          const result = await Axios.get('http://dummy.restapiexample.com/api/v1/employees') 
+          const result = await Axios.get('https://jsonplaceholder.typicode.com/users') 
           this.options = result.data
+          const userName = result.data.map(obj => obj.name)
+          this.options = userName
 
         } catch (err) {
           console.log(err)
